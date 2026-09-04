@@ -63,12 +63,27 @@ USE `LittleLemonDB` ;
 
 -- -----------------------------------------------------
 -- Table `LittleLemonDB`.`customers`
+--
+-- Because `bookings`.`customer_id` and `orders`.`customer_id` are both
+-- NOT NULL, no booking or order can exist without a row here. This table
+-- therefore records everyone the restaurant has served, not only those
+-- who registered an account -- which decides the two contact columns:
+--
+--   `phone` is NOT NULL. It is taken for every booking and is how a late
+--       table is chased, so it can be demanded of every customer.
+--   `email` is nullable and UNIQUE. Together those state the actual rule:
+--       no two customers may share an email, and any number may have
+--       none. Making it mandatory would bar the walk-in who declines to
+--       give one, and inviting a placeholder such as '' or
+--       'walkin@littlelemon.local' is worse than NULL -- NULL honestly
+--       records that the value is unknown, a placeholder pollutes every
+--       mailing list drawn from the table and, being UNIQUE, works once.
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `LittleLemonDB`.`customers` (
   `customer_id` INT NOT NULL AUTO_INCREMENT,
   `first_name` VARCHAR(50) NOT NULL,
   `last_name` VARCHAR(50) NOT NULL,
-  `phone` VARCHAR(20) NULL,
+  `phone` VARCHAR(20) NOT NULL,
   `email` VARCHAR(100) NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`customer_id`),
